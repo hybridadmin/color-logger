@@ -3,7 +3,7 @@
 declare -A text_colors background_colors emphasis
 declare -a formatting
 
-escape="\033[";
+escape="\e[";
 reset="${escape}0m";
 
 text_colors[default]=39
@@ -48,72 +48,16 @@ emphasis[underline]=4
 emphasis[blink]=5
 emphasis[reverse]=7
 
-
-function write-log () {
-	# check if message
-	test -n "$1" || {
-		echo;
-		return;
-	}
-	
-	#
-	# Extract message
-	#
-	message=$1;
-	shift;
-	
-	#
-	# parse options
-	#
-	
-	color="default";
-	background_color="default";
-	formatting+=("default");
+function write-log(){
+	# Check - https://github.com/mercuriev/bash_colors/blob/master/bash_colors.sh
+	no_color='\e[0m'
+	color=$1
+	log_msg=$2
 	line_break="\n";
-	TIME_STAMP=`date "+%Y-%m-%d %H:%M:%S"`
-	
-	while getopts ":c:k:biunlr" option; do
-	case $option in
-		c)
-			color=$OPTARG;
-			;;
-		k)
-			background_color=$OPTARG;
-			;;
-		b)
-			formatting+=("bold")
-			;;
-		i)
-			formatting+=("italics")
-			;;
-		u)
-			formatting+=("underline")
-			;;
-		l)
-			formatting+=("blink")
-			;;
-		r)
-			formatting+=("reverse")
-			;;
-		n)
-			line_break="";
-			;;
-	esac
-	done
-	
-	#
-	# build treatment
-	#
-	treatment="${escape}";
-	for format in ${formatting[@]}
-	do
-		treatment="${treatment}${emphasis[$format]};"
-	done
-	# reset formatting array
-	formatting=();
-	treatment="${treatment}${text_colors[$color]};"
-	treatment="${treatment}${background_colors[$background_color]}m"
-	
-	stampedMessage="$TIME_STAMP $message"	
-	printf "${treatment}%s${reset}${line_break}" $stampedMessage;
+	time_stamp=`date "+%Y-%m-%d %H:%M:%S"`
+
+	color_code="${text_colors[$color]}"
+	str_color="${escape}0;${color_code}m"
+
+	echo -e "${line_break}${time_stamp} ${str_color} ${log_msg} ${no_color}"	
 }
