@@ -48,6 +48,7 @@ emphasis[underline]=4
 emphasis[blink]=5
 emphasis[reverse]=7
 
+echo "Enabling colored output" 
 function write-log(){
 	# Check - https://github.com/mercuriev/bash_colors/blob/master/bash_colors.sh
 	no_color='\e[0m'
